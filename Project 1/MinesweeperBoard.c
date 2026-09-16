@@ -111,6 +111,16 @@ int revealTile(int board[ROWS][COLS], bool mineGrid[ROWS][COLS], int row, int co
                 adjacentMines++;
         }
         board[row][col] = adjacentMines;
+
+        if (adjacentMines == 0) {//If user selects a tile with no near mines reveal surroundin tiles
+            for (int rowPos = row - 1; rowPos <= row + 1; rowPos++) {
+                for (int colPos = col - 1; colPos <= col + 1; colPos++) {
+                    if (rowPos >= 0 && rowPos < ROWS && colPos >= 0 && colPos < COLS) {
+                        revealTile(board, mineGrid, rowPos, colPos);
+                    }
+                }
+            }
+        }
         return 1; // Success.
     }
     return 0; // Nothing Occured.
@@ -152,14 +162,27 @@ int main(void) {
 
     bool gameActive = true;
     int rowGuess;
-    int colGuess;
+    char colGuess;
     while (gameActive) {
         printf("Enter row: ");
-        scanf("%d", &rowGuess);
+        if (scanf("%d", &rowGuess) != 1) {//Better Error Handling
+            while (getchar() != '\n') {
+                ;
+            }
+            continue;
+        }
         printf("Enter column: ");
-        scanf("%d", &colGuess);
-        revealTile(board, mineGrid, rowGuess, colGuess); // 2 = Mine Hit, 3 = Tiles cleared. 0/1 aren't states that end the game.
-        gameActive = checkWin(board, mineGrid); //Checks win status
+        if (scanf(" %c", &colGuess) != 1) { //Better Error Handling
+            while (getchar() != '\n') {
+                ;
+            }
+            continue;
+        }
+        if (rowGuess < 1 || rowGuess > ROWS || colGuess < 'A' || colGuess > 'J') {
+            continue;
+        }
+        int revealResult = revealTile(board, mineGrid, rowGuess - 1, colGuess - 'A');
+        gameActive = revealResult < 2 && !checkWin(board, mineGrid);
         printBoard(board);
         printMines(mineGrid); // Mine printing for debugging.
     }
