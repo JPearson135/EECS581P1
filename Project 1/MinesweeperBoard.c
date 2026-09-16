@@ -116,6 +116,17 @@ int revealTile(int board[ROWS][COLS], bool mineGrid[ROWS][COLS], int row, int co
     return 0; // Nothing Occured.
 }
 
+bool checkWin(int board[ROWS][COLS], bool mineGrid[ROWS][COLS]) { //Goes through the board to see if every non-mine cell has been revealed, signifying a win
+    for (int row = 0; row < ROWS; row++) {
+        for (int col = 0; col < COLS; col++) {
+            if (!mineGrid[row][col] && board[row][col] == 9) {
+                return false; //If a non-mine cell is not revealed, continue playing
+            }
+        }
+    }
+    return true; //If every non-mine cell has been revealed, the game has been won
+}
+
 int main(void) {
     int board[ROWS][COLS];
     bool mineGrid[ROWS][COLS];
@@ -147,7 +158,8 @@ int main(void) {
         scanf("%d", &rowGuess);
         printf("Enter column: ");
         scanf("%d", &colGuess);
-        gameActive = (revealTile(board, mineGrid, rowGuess, colGuess) < 2); // 2 = Mine Hit, 3 = Tiles cleared. 0/1 aren't states that end the game.
+        revealTile(board, mineGrid, rowGuess, colGuess); // 2 = Mine Hit, 3 = Tiles cleared. 0/1 aren't states that end the game.
+        gameActive = checkWin(board, mineGrid); //Checks win status
         printBoard(board);
         printMines(mineGrid); // Mine printing for debugging.
     }
