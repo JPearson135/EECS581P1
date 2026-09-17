@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #define ROWS 10
 #define COLS 10
@@ -158,34 +159,47 @@ int main(void) {
     printf("Columns: A-J | Rows: 1-10\n");
 
     printBoard(board);
-    printMines(mineGrid); // Mine printing for debugging.
+#ifdef TEST_MODE
+    printMines(mineGrid);
+#endif
 
     bool gameActive = true;
     int rowGuess;
-    char colGuess;
+    char colInput[100];
     while (gameActive) {
         printf("Enter row: ");
         if (scanf("%d", &rowGuess) != 1) {//Better Error Handling
             while (getchar() != '\n') {
                 ;
             }
+            printf("Invalid row. Please enter a number from 1 to %d.\n", ROWS);
+            continue;
+        }
+        if (rowGuess < 1 || rowGuess > ROWS) {
+            printf("Invalid row. Please enter a number from 1 to %d.\n", ROWS);
             continue;
         }
         printf("Enter column: ");
-        if (scanf(" %c", &colGuess) != 1) { //Better Error Handling
+        if (scanf(" %99s", colInput) != 1) { //Better Error Handling
             while (getchar() != '\n') {
                 ;
             }
+            printf("Invalid column. Please enter a letter from A to J.\n");
             continue;
         }
-        if (rowGuess < 1 || rowGuess > ROWS || colGuess < 'A' || colGuess > 'J') {
+        if (colInput[1] != '\0' || colInput[0] < 'A' || colInput[0] > 'J') {
+            printf("Invalid column. Please enter a letter from A to J.\n");
             continue;
         }
-        int revealResult = revealTile(board, mineGrid, rowGuess - 1, colGuess - 'A');
+        int revealResult = revealTile(board, mineGrid, rowGuess - 1, colInput[0] - 'A');
         gameActive = revealResult < 2 && !checkWin(board, mineGrid);
         printBoard(board);
-        printMines(mineGrid); // Mine printing for debugging.
+    #ifdef TEST_MODE
+        printMines(mineGrid);
+    #endif
     }
 
+    printf("Game Over! You %s!\n", checkWin(board, mineGrid) ? "Win" : "hit a mine");
+    sleep(1);
     return 0;
 }
