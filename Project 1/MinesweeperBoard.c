@@ -75,7 +75,12 @@ void printBoard(const int board[ROWS][COLS]) {
     for (int row = 0; row < ROWS; row++) {
         printf("%2d  ", row + 1);
         for (int col = 0; col < COLS; col++) {
-            printf("%d ", board[row][col]);
+            if (board[row][col] == 9) {
+                printf("# ");
+            }
+            else {
+                printf("%d ", board[row][col]);
+            }
         }
         printf("\n");
     }
