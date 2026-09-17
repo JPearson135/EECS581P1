@@ -191,7 +191,13 @@ int main(void) {
             printf("Invalid column. Please enter a letter from A to J.\n");
             continue;
         }
-        int revealResult = revealTile(board, mineGrid, rowGuess - 1, colInput[0] - 'A');
+        int selectedRow = rowGuess - 1;
+        int selectedCol = colInput[0] - 'A';
+        if (board[selectedRow][selectedCol] != 9) {
+            printf("That tile has already been revealed. Please choose another tile.\n");
+            continue;
+        }
+        int revealResult = revealTile(board, mineGrid, selectedRow, selectedCol);
         gameActive = revealResult < 2 && !checkWin(board, mineGrid);
         printBoard(board);
     #ifdef TEST_MODE
