@@ -69,13 +69,15 @@ void placeMines(bool mineGrid[ROWS][COLS], int mineCount) {
     }
 }
 
-void printBoard(const int board[ROWS][COLS]) {
+void printBoard(const int board[ROWS][COLS], bool flagGrid[ROWS][COLS]) {
     printf("    A B C D E F G H I J\n");
 
     for (int row = 0; row < ROWS; row++) {
         printf("%2d  ", row + 1);
         for (int col = 0; col < COLS; col++) {
-            if (board[row][col] == 9) {
+            if (board[row][col] == 9 && flagGrid[row][col]) {
+                printf("f ");
+            } else if (board[row][col] == 9) {
                 printf("# ");
             }
             else {
@@ -143,6 +145,14 @@ bool checkWin(int board[ROWS][COLS], bool mineGrid[ROWS][COLS]) { //Goes through
     return true; //If every non-mine cell has been revealed, the game has been won
 }
 
+void flagCell(bool flagGrid[ROWS][COLS], const int board[ROWS][COLS], int row, int col) {
+    if (board[row][col] != 9) {
+        printf("Invalid flag placement. Place flag on unrevealed tile\n");
+        return;
+    }
+    flagGrid[row][col] = !flagGrid[row][col];
+}
+
 int main(void) {
     int board[ROWS][COLS];
     bool mineGrid[ROWS][COLS];
@@ -163,7 +173,7 @@ int main(void) {
     printf("Mines placed: %d\n", mineCount);
     printf("Columns: A-J | Rows: 1-10\n");
 
-    printBoard(board);
+    printBoard(board, flagGrid);
 #ifdef TEST_MODE
     printMines(mineGrid);
 #endif
@@ -171,7 +181,14 @@ int main(void) {
     bool gameActive = true;
     int rowGuess;
     char colInput[100];
+    char cellChoice;
     while (gameActive) {
+        printf("Would you like to reveal a cell (r) or place a flag (f)?: ");
+        if (scanf(" %c", &cellChoice) != 1 || (cellChoice != 'r' && cellChoice != 'f')) {
+            while (getchar() != '\n') {;}
+            printf("Invalid choice. Please enter 'r' or 'f'.\n");
+            continue;
+        }
         printf("Enter row: ");
         if (scanf("%d", &rowGuess) != 1) {//Better Error Handling
             while (getchar() != '\n') {
@@ -198,13 +215,23 @@ int main(void) {
         }
         int selectedRow = rowGuess - 1;
         int selectedCol = colInput[0] - 'A';
-        if (board[selectedRow][selectedCol] != 9) {
-            printf("That tile has already been revealed. Please choose another tile.\n");
-            continue;
+
+        if (cellChoice == 'f') {
+            flagCell(flagGrid, board, selectedRow, selectedCol);
+        } else if (cellChoice == 'r') {
+            if (board[selectedRow][selectedCol] != 9) {
+                printf("That tile has already been revealed. Please choose another tile.\n");
+                continue;
+            }
+            if (flagGrid[selectedRow][selectedCol]) {
+                printf("Tile has been flagged. Unflag it to reveal it. \n");
+                continue;
+            }
+            int revealResult = revealTile(board, mineGrid, selectedRow, selectedCol);
+            gameActive = revealResult < 2 && !checkWin(board, mineGrid);
         }
-        int revealResult = revealTile(board, mineGrid, selectedRow, selectedCol);
-        gameActive = revealResult < 2 && !checkWin(board, mineGrid);
-        printBoard(board);
+
+        printBoard(board, flagGrid);
     #ifdef TEST_MODE
         printMines(mineGrid);
     #endif
