@@ -4,7 +4,7 @@ var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
 
-function initializeBoard(board){
+function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
             board[row][col] = 9;
@@ -12,7 +12,7 @@ function initializeBoard(board){
     }
     return board;
 }
-function initializeMineGrid(mineGrid) {
+function initializeMineGrid(mineGrid) { //go thorugh every row and col, populating the board with false
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
             mineGrid[row][col] = false;
@@ -21,7 +21,7 @@ function initializeMineGrid(mineGrid) {
     return mineGrid;
 }
 
-function initializeFlagGrid(flagGrid) {
+function initializeFlagGrid(flagGrid) { //go thorugh every row and col, populating the board with false
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
             flagGrid[row][col] = false;
@@ -30,16 +30,16 @@ function initializeFlagGrid(flagGrid) {
     return flagGrid;
 }
 
-function promptForMineCount() {
+function promptForMineCount() { 
     let mineCount;
 
     do {
-        mineCount = Number(prompt(`Enter number of mines: (${MIN_MINES}-${MAX_MINES})`));
-        if (Number.isNaN(mineCount)){
+        mineCount = Number(prompt(`Enter number of mines: (${MIN_MINES}-${MAX_MINES})`)); //get number of mines
+        if (Number.isNaN(mineCount)){ //if entry is NaN (not a number)
             console.log("Invalid input. Please enter a number.");
-            mineCount = -1;
+            mineCount = -1; //reset mineCount
         }
-        if (mineCount < MIN_MINES || mineCount > MAX_MINES) {
+        if (mineCount < MIN_MINES || mineCount > MAX_MINES) { //if mineCount outside of range
             console.log(`Mine count must be between ${MIN_MINES} and ${MAX_MINES}`);
         }
     } while (mineCount < MIN_MINES || mineCount > MAX_MINES);
@@ -50,12 +50,12 @@ function promptForMineCount() {
 function placeMines(mineGrid, mineCount) {
     let placedMines = 0;
 
-    while (placedMines < mineCount) {
-        let row = Math.floor(Math.random() * ROWS);
-        let col = Math.floor(Math.random() * COLS);
+    while (placedMines < mineCount) { 
+        let row = Math.floor(Math.random() * ROWS); //get random row number
+        let col = Math.floor(Math.random() * COLS); //ger random column number
 
-        if (!mineGrid[row][col]) {
-            mineGrid[row][col] = true;
+        if (!mineGrid[row][col]) { //if theres not a mine there
+            mineGrid[row][col] = true; //set cell to true
             placedMines++;
         }
     }
@@ -65,20 +65,20 @@ function placeMines(mineGrid, mineCount) {
 function printBoard(board, flagGrid) {
     console.log("   A B C D E F G H I J");
 
-    for (let row = 0; row < ROWS; row++) {
-        let line = `${row+1} `;
-        for (let col = 0; col < COLS; col++) {
-            if (board[row][col] == 9 && flagGrid[row][col]) {
-                line+=("f ");
+    for (let row = 0; row < ROWS; row++) { 
+        let line = `${row+1} `; //add row number to line
+        for (let col = 0; col < COLS; col++) { 
+            if (board[row][col] == 9 && flagGrid[row][col]) { //check if cell covered and flagged
+                line+=("f "); //flag
             }
-            else if (board[row][col] == 9) {
+            else if (board[row][col] == 9) { //check if cell uncovered
                 line+="# ";
             }
             else {
-                line+= board[row][col] + " ";
+                line+= board[row][col] + " "; //print number
             }
         }
-        console.log(line);
+        console.log(line); //print row to terminal
     }
 }
 
@@ -95,10 +95,12 @@ function revealTile(board,mineGrid,row,col) {
     }
     firstTurn = false;
     if (board[row][col] == 9) {
-        for (let tiles = 0; tiles < 9; tiles++) {
-            let rowPos = row - 1 + Math.floor(tiles / 3);
+        for (let tiles = 0; tiles < 9; tiles++) { 
+            //starting from top left, go through every adjacent tile
+            let rowPos = row - 1 + Math.floor(tiles / 3); 
             let colPos = col - 1 + (tiles % 3);
-            if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS) && mineGrid[rowPos][colPos])
+            
+            if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS) && mineGrid[rowPos][colPos]) //if tile in bounds and contains a mine
                 adjacentMines++;
         }
         board[row][col] = adjacentMines;
@@ -130,7 +132,7 @@ function checkWin(board,mineGrid) { //Goes through the board to see if every non
 
 function flagCell(flagGrid, board, row, col) {
     if (board[row][col] != 9) {
-        printf("Invalid flag placement. Place flag on unrevealed tile\n");
+        console.log("Invalid flag placement. Place flag on unrevealed tile");
         return;
     }
     flagGrid[row][col] = !flagGrid[row][col];
@@ -185,7 +187,7 @@ function main(){
             continue; 
         }
 
-        colGuess = (prompt("Enter column: "));
+        let colGuess = (prompt("Enter column: "));
         
         if(colGuess == null || colGuess.length === 0){
             console.log("Invalid column. Please enter a letter from A to J")
