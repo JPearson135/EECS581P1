@@ -29,6 +29,24 @@ function initializeFlagGrid(flagGrid) {
     }
     return flagGrid;
 }
+
+function promptForMineCount() {
+    let mineCount;
+
+    do {
+        mineCount = Number(prompt(`Enter number of mines: (${MIN_MINES}-${MAX_MINES})`));
+        if (Number.isNaN(mineCount)){
+            console.log("Invalid input. Please enter a number.");
+            mineCount = -1;
+        }
+        if (mineCount < MIN_MINES || mineCount > MAX_MINES) {
+            console.log(`Mine count must be between ${MIN_MINES} and ${MAX_MINES}`);
+        }
+    } while (mineCount < MIN_MINES || mineCount > MAX_MINES);
+
+    return mineCount;
+}
+
 function printBoard(board) {
     console.log("    A B C D E F G H I J");
 
@@ -62,7 +80,7 @@ function main(){
     mineGrid = initializeMineGrid(mineGrid);
     flagGrid = initializeFlagGrid(flagGrid);
 
-    //mineCount = promptForMineCount();
+    mineCount = promptForMineCount();
     //placeMines(mineGrid, mineCount);
 
     console.log("\nGame setup complete.");
