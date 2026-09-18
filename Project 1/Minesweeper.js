@@ -62,13 +62,16 @@ function placeMines(mineGrid, mineCount) {
     return mineGrid;
 }
 
-function printBoard(board) {
-    console.log("    A B C D E F G H I J");
+function printBoard(board, flagGrid) {
+    console.log("   A B C D E F G H I J");
 
     for (let row = 0; row < ROWS; row++) {
         let line = `${row+1} `;
         for (let col = 0; col < COLS; col++) {
-            if (board[row][col] == 9) {
+            if (board[row][col] == 9 && flagGrid[row][col]) {
+                line+=("f ");
+            }
+            else if (board[row][col] == 9) {
                 line+="# ";
             }
             else {
@@ -125,6 +128,15 @@ function checkWin(board,mineGrid) { //Goes through the board to see if every non
     return true; //If every non-mine cell has been revealed, the game has been won
 }
 
+function flagCell(flagGrid, board, row, col) {
+    if (board[row][col] != 9) {
+        printf("Invalid flag placement. Place flag on unrevealed tile\n");
+        return;
+    }
+    flagGrid[row][col] = !flagGrid[row][col];
+    return flagGrid
+}
+
 function main(){
     let board = Array(ROWS)
     let mineGrid = Array(ROWS)
@@ -149,11 +161,21 @@ function main(){
     console.log("Mines placed:",mineCount);
     console.log("Columns: A-J | Rows: 1-10");
 
-    printBoard(board);
+    printBoard(board,flagGrid);
+
     let gameActive = true;
     let rowGuess;
+    let cellChoice;
+
     while(gameActive){
+        cellChoice = prompt("Would you like to reveal a cell (r) or place a flag (f)?: ");
+        if (cellChoice == null || cellChoice.length === 0 || cellChoice != 'r' && cellChoice != 'f') {
+            console.log("Invalid choice. Please enter 'r' or 'f'.\n");
+            continue;
+        }
+
         rowGuess = Number(prompt("Enter row: "));
+        
         if(Number.isNaN(rowGuess)){
             console.log(`Invalid row. Please enter a number from 1 to ${ROWS}`)
             continue;
@@ -162,7 +184,9 @@ function main(){
             console.log(`Invalid row. Please enter a number from 1 to ${ROWS}`);
             continue; 
         }
+
         colGuess = (prompt("Enter column: "));
+        
         if(colGuess == null || colGuess.length === 0){
             console.log("Invalid column. Please enter a letter from A to J")
             continue;
@@ -171,15 +195,29 @@ function main(){
             console.log("Invalid column. Please enter a letter from A to J")
             continue;
         }
+        
         let selectedRow = rowGuess - 1;
         let selectedCol = colGuess.charCodeAt(0) - 'A'.charCodeAt(0);
-        if (board[selectedRow][selectedCol] != 9) {
-            console.log("That tile has already been revealed. Please choose another tile.");
-            continue;
+        if (cellChoice == 'f') {
+            flagCell(flagGrid, board, selectedRow, selectedCol);
         }
-        let revealResult = revealTile(board, mineGrid, selectedRow, selectedCol);
-        gameActive = revealResult < 2 && !checkWin(board, mineGrid);
-        printBoard(board);
+
+        else if (cellChoice == 'r'){
+            if (board[selectedRow][selectedCol] != 9) {
+                console.log("That tile has already been revealed. Please choose another tile.");
+                continue;
+            }
+            if (flagGrid[selectedRow][selectedCol]) {
+                console.log("Tile has been flagged. Unflag it to reveal it. \n");
+                continue;
+            }
+            let revealResult = revealTile(board, mineGrid, selectedRow, selectedCol);
+            gameActive = revealResult < 2 && !checkWin(board, mineGrid);
+        }
+        
+        
+        
+        printBoard(board,flagGrid);
     } 
     console.log(`Game Over! You ${checkWin(board, mineGrid) ? "Win" : "hit a mine"}`);
 }
