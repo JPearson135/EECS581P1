@@ -1,7 +1,32 @@
 <!DOCTYPE html>
 <html>
+<title>Minesweeper</title>
+
+<style>
+    /* the best css you've ever seen */
+    table {
+        border-collapse: collapse;
+    }
+    td {
+        width: 25px;
+        height: 25px;
+        text-align: center;
+        border: 1px solid black;
+        cursor: pointer;
+    }
+    .revealed {
+        background: #ddd;
+    }
+</style>
+
 <head>
 </head>
+
 <body>
+    <h1>Minesweeper</h1>
+    <button onclick="newGame()">New Game</button>"
+    <p id="status"></p>
+    <table id="board"></table>
+    
 <script src="Minesweeper.js"></script>
 </body>
