@@ -110,11 +110,30 @@ function flagCell(flagGrid, board, row, col) {
 
 function buildGrid() {
     const gameBoard = document.getElementById('board');
-    gameBoard.innerHTML = ''; // Clear previous game
+    gameBoard.innerHTML = ''; // clear previous game
 
-    // Create table rows and cells
+    const headerRow = document.createElement('tr');
+    const corner = document.createElement('th');
+    headerRow.appendChild(corner);
+
+    // add column labels A-J
+    for (let col = 0; col < COLS; col++) {
+        const th = document.createElement('th');
+        th.textContent = String.fromCharCode(65 + col);
+        headerRow.appendChild(th);
+    }
+
+    gameBoard.appendChild(headerRow);
+
+    // create table rows and cells
     for (let row = 0; row < ROWS; row++) {
         const tr = document.createElement('tr');
+
+        // add row labels 1-10
+        const rowLabel = document.createElement('th');
+        rowLabel.textContent = row + 1;
+        tr.appendChild(rowLabel);
+
         for (let col = 0; col < COLS; col++) {
             const td = document.createElement('td'); // table cell data
             td.id = 'cell-' + row + '-' + col; // Unique ID for each cell
@@ -135,9 +154,10 @@ function buildGrid() {
                 e.preventDefault(); // allows right click without browser menu popup
                 handleFlag(row, col);
             };
-            tr.appendChild(td); // Append cell to row
+            tr.appendChild(td); // append cell to row
         }
-        gameBoard.appendChild(tr); // Append row to table
+
+        gameBoard.appendChild(tr); // append row to table
     }
 }
 
