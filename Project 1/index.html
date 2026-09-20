@@ -24,6 +24,17 @@
 
 <body>
     <h1>Minesweeper</h1>
+    <!-- mine count -->
+    <label for="mineSlider">Mines: <span id="mineCount">10</span></label> 
+    <!-- slider details -->
+    <input
+        type="range"
+        id="mineSlider"
+        min="10"
+        max="20"
+        value="10"
+        oninput="document.getElementById('mineCount').textContent = this.value"
+    >
     <button onclick="main()">New Game</button>
     <p id="status"></p>
     <table id="board"></table>
