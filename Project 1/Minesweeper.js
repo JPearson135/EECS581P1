@@ -97,10 +97,29 @@ function checkWin(board,mineGrid) { //Goes through the board to see if every non
 function flagCell(flagGrid, board, row, col) {
     if (board[row][col] != 9) {
         console.log("Invalid flag placement. Place flag on unrevealed tile");
-        return;
+        return flagGrid;
     }
+
+    let placedFlags = 0;
+
+    // go through every cell and count placed flags
+    for (let rowPos = 0; rowPos < ROWS; rowPos++) {
+        for (let colPos = 0; colPos < COLS; colPos++) {
+            if (flagGrid[rowPos][colPos]) {
+                placedFlags++;
+            }
+        }
+    }
+
+    let mineCount = Number(document.getElementById('mineSlider').value);
+
+    // prevent placing more flags than there are mines
+    if (!flagGrid[row][col] && placedFlags >= mineCount) {
+        return flagGrid;
+    }
+
     flagGrid[row][col] = !flagGrid[row][col];
-    return flagGrid
+    return flagGrid;
 }
 
 function updateFlagCount() {
