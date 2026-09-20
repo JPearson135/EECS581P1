@@ -118,8 +118,19 @@ function buildGrid() {
         for (let col = 0; col < COLS; col++) {
             const td = document.createElement('td'); // table cell data
             td.id = 'cell-' + row + '-' + col; // Unique ID for each cell
-            td.onclick = () => handleReveal(row, col);
-            td.ondblclick = () => handleDoubleReveal(row, col);
+            td.onclick = (e) => {
+                if (e.ctrlKey) {
+                    handleFlag(row, col); //Holding ctrl with left click will toggle flag
+                } else {
+                    handleReveal(row, col);
+                }
+            };
+            td.ondblclick = (e) => {
+                if (e.ctrlKey) {
+                    return; //Handles double reveal
+                }
+                handleDoubleReveal(row, col);
+            }
             td.oncontextmenu = (e) => {
                 e.preventDefault(); // allows right click without browser menu popup
                 handleFlag(row, col);
