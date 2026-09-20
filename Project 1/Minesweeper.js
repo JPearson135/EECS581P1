@@ -3,6 +3,7 @@ var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
+var board, mineGrid, flagGrid, gameOver;
 
 function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
     for (let row = 0; row < ROWS; row++) {
@@ -30,23 +31,6 @@ function initializeFlagGrid(flagGrid) { //go thorugh every row and col, populati
     return flagGrid;
 }
 
-function promptForMineCount() { 
-    let mineCount;
-
-    do {
-        mineCount = Number(prompt(`Enter number of mines: (${MIN_MINES}-${MAX_MINES})`)); //get number of mines
-        if (Number.isNaN(mineCount)){ //if entry is NaN (not a number)
-            console.log("Invalid input. Please enter a number.");
-            mineCount = -1; //reset mineCount
-        }
-        if (mineCount < MIN_MINES || mineCount > MAX_MINES) { //if mineCount outside of range
-            console.log(`Mine count must be between ${MIN_MINES} and ${MAX_MINES}`);
-        }
-    } while (mineCount < MIN_MINES || mineCount > MAX_MINES);
-
-    return mineCount;
-}
-
 function placeMines(mineGrid, mineCount) {
     let placedMines = 0;
 
@@ -60,26 +44,6 @@ function placeMines(mineGrid, mineCount) {
         }
     }
     return mineGrid;
-}
-
-function printBoard(board, flagGrid) {
-    console.log("   A B C D E F G H I J");
-
-    for (let row = 0; row < ROWS; row++) { 
-        let line = `${row+1} `; //add row number to line
-        for (let col = 0; col < COLS; col++) { 
-            if (board[row][col] == 9 && flagGrid[row][col]) { //check if cell covered and flagged
-                line+=("f "); //flag
-            }
-            else if (board[row][col] == 9) { //check if cell uncovered
-                line+="# ";
-            }
-            else {
-                line+= board[row][col] + " "; //print number
-            }
-        }
-        console.log(line); //print row to terminal
-    }
 }
 
 function revealTile(board,mineGrid,row,col) {
@@ -139,88 +103,125 @@ function flagCell(flagGrid, board, row, col) {
     return flagGrid
 }
 
-function main(){
-    let board = Array(ROWS)
-    let mineGrid = Array(ROWS)
-    let flagGrid = Array(ROWS)
-    for(let i=0; i<ROWS; i++){
+
+
+// Code chunk below replaces prompt-based input
+// ========================================================================================================================================
+
+function buildGrid() {
+    const gameBoard = document.getElementById('board');
+    gameBoard.innerHTML = ''; // Clear previous game
+
+    // Create table rows and cells
+    for (let row = 0; row < ROWS; row++) {
+        const tr = document.createElement('tr');
+        for (let col = 0; col < COLS; col++) {
+            const td = document.createElement('td'); // table cell data
+            td.id = 'cell-' + row + '-' + col; // Unique ID for each cell
+            td.onclick = () => handleReveal(row, col);
+            td.oncontextmenu = (e) => {
+                e.preventDefault(); // allows right click without browser menu popup
+                handleFlag(row, col);
+            };
+            tr.appendChild(td); // Append cell to row
+        }
+        gameBoard.appendChild(tr); // Append row to table
+    }
+}
+
+function render() {
+    // Update the display based on current state of the board and flagGrid
+    for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+            const td = document.getElementById('cell-' + row + '-' + col);
+            const val = board[row][col];
+            td.className = '';
+            td.textContent = '';
+
+            // flag
+            if (val === 9) {
+                if (flagGrid[row][col]) {
+                    td.textContent = 'F';
+                }
+            // mine
+            } else if (val === -1) {
+                td.className = 'revlealed';
+                td.textContent = '*'; 
+            // safe cell
+            } else {
+                td.className = 'revealed';
+                if (val > 0) {
+                    td.textContent = val;
+                }
+            }
+        }
+    }
+}
+
+function revealAllMines() {
+    for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+            if (mineGrid[row][col]) {
+                board[row][col] = -1; // -1 represents a mine
+            }
+        }
+    }
+}
+
+function handleReveal(row, col) {
+    if (gameOver) return;
+
+    let revealResult = revealTile(board, mineGrid, row, col);
+    render();
+
+    // revealResult === 2 reprensents hitting a mine
+    if (revealResult === 2) {
+        gameOver = true;
+        revealAllMines();
+        render();
+    } else if (checkWin(board, mineGrid)) {
+        gameOver = true;
+    }
+    if (gameOver) {
+        document.getElementById('status').textContent = `Game Over You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
+    } else {
+        document.getElementById('status').textContent = '';
+    }
+}
+
+function handleFlag(row, col) {
+    if (gameOver) return;
+    flagGrid = flagCell(flagGrid, board, row, col); // Update the flagGrid
+    render();
+}
+
+function newGame() {
+    // Create 2D arrays for board, mineGrid, and flagGrid
+    board = Array(ROWS);
+    mineGrid = Array(ROWS);
+    flagGrid = Array(ROWS);
+    for (let i = 0; i < ROWS; i++) {
         board[i] = Array(COLS);
         mineGrid[i] = Array(COLS);
         flagGrid[i] = Array(COLS);
     }
-    
-    let mineCount;
-    
     board = initializeBoard(board);
     mineGrid = initializeMineGrid(mineGrid);
     flagGrid = initializeFlagGrid(flagGrid);
+    mineGrid = placeMines(mineGrid, MIN_MINES); // fixed count for now
+    firstTurn = true;
+    gameOver = false;
+    buildGrid();
+    render();
+    document.getElementById('status').textContent = '';
 
-    mineCount = promptForMineCount();
-    mineGrid = placeMines(mineGrid, mineCount);
 
-    console.log("\nGame setup complete.");
-    console.log("Board size:", ROWS," x ", COLS);
-    console.log("Mines placed:",mineCount);
-    console.log("Columns: A-J | Rows: 1-10");
+}
 
-    printBoard(board,flagGrid);
+// ========================================================================================================================================
 
-    let gameActive = true;
-    let rowGuess;
-    let cellChoice;
 
-    while(gameActive){
-         
-        cellChoice = prompt("Would you like to reveal a cell (r) or place a flag (f)?: ");
-        if (cellChoice == null || cellChoice.length === 0 || cellChoice != 'r' && cellChoice != 'f') {
-            console.log("Invalid choice. Please enter 'r' or 'f'.\n");
-            continue;
-        }
 
-        rowGuess = Number(prompt("Enter row: "));
-        
-        if(Number.isNaN(rowGuess)){
-            console.log(`Invalid row. Please enter a number from 1 to ${ROWS}`)
-            continue;
-        }
-        if (rowGuess < 1 || rowGuess > ROWS) {
-            console.log(`Invalid row. Please enter a number from 1 to ${ROWS}`);
-            continue; 
-        }
-
-        let colGuess = (prompt("Enter column: "));
-        
-        if(colGuess == null || colGuess.length === 0){
-            console.log("Invalid column. Please enter a letter from A to J")
-            continue;
-        }
-        if (colGuess.length !== 1 || colGuess < 'A' || colGuess > 'J') {
-            console.log("Invalid column. Please enter a letter from A to J")
-            continue;
-        }
-        
-        let selectedRow = rowGuess - 1;
-        let selectedCol = colGuess.charCodeAt(0) - 'A'.charCodeAt(0);
-        if (cellChoice == 'f') {
-            flagCell(flagGrid, board, selectedRow, selectedCol);
-        }
-
-        else if (cellChoice == 'r'){
-            if (board[selectedRow][selectedCol] != 9) {
-                console.log("That tile has already been revealed. Please choose another tile.");
-                continue;
-            }
-            if (flagGrid[selectedRow][selectedCol]) {
-                console.log("Tile has been flagged. Unflag it to reveal it. \n");
-                continue;
-            }
-            let revealResult = revealTile(board, mineGrid, selectedRow, selectedCol);
-            gameActive = revealResult < 2 && !checkWin(board, mineGrid);
-        }
-        
-        
-        
-        printBoard(board,flagGrid);
-    } 
-    console.log(`Game Over! You ${checkWin(board, mineGrid) ? "Win" : "hit a mine"}`);
+function main(){
+    newGame();
 }
