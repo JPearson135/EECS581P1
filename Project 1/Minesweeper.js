@@ -146,7 +146,7 @@ function render() {
             // mine
             } else if (val === -1) {
                 td.className = 'revlealed';
-                td.textContent = '*'; 
+                td.textContent = '💥'; 
             // safe cell
             } else {
                 td.className = 'revealed';
