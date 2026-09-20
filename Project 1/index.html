@@ -1,31 +1,46 @@
 <!DOCTYPE html>
-<html>
-<title>Minesweeper</title>
-
-<style>
-    /* the best css you've ever seen */
-    table {
-        border-collapse: collapse;
-    }
-    td {
-        width: 25px;
-        height: 25px;
-        text-align: center;
-        border: 1px solid black;
-        cursor: pointer;
-    }
-    .revealed {
-        background: #ddd;
-    }
-</style>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        td {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            border: 1px solid black;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .revealed {
+            background: #ddd;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Minesweeper</h1>
     <!-- mine count -->
-    <label for="mineSlider">Mines: <span id="mineCount">10</span></label> 
+    <label for="mineSlider">Mines: <span id="mineCount">10</span></label>
     <!-- slider details -->
     <input
         type="range"
@@ -41,6 +56,6 @@
 
     <p><b>Left Click:</b> Reveal Cell<br><b>Right Click:</b> Flag/Unflag Cell</p>
 
-<script src="Minesweeper.js"></script>
+    <script src="Minesweeper.js"></script>
 </body>
 </html>

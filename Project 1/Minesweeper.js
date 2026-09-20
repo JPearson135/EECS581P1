@@ -119,6 +119,7 @@ function buildGrid() {
             const td = document.createElement('td'); // table cell data
             td.id = 'cell-' + row + '-' + col; // Unique ID for each cell
             td.onclick = () => handleReveal(row, col);
+            td.ondblclick = () => handleDoubleReveal(row, col);
             td.oncontextmenu = (e) => {
                 e.preventDefault(); // allows right click without browser menu popup
                 handleFlag(row, col);
@@ -189,6 +190,51 @@ function handleReveal(row, col) {
     }
 }
 
+function handleDoubleReveal(row, col) { //Reveal surrounding tiles when a numbered tile is double-clicked
+    if (gameOver) return;
+    if (board[row][col] < 1 || board[row][col] > 8) {
+        return;
+    }
+
+    let hitMine = false;
+    for (let rowPos = row - 1; rowPos <= row + 1; rowPos++) {
+        for (let colPos = col - 1; colPos <= col + 1; colPos++) {
+            if (rowPos >= 0 && rowPos < ROWS && colPos >= 0 && colPos < COLS) {
+                if (flagGrid[rowPos][colPos] || board[rowPos][colPos] != 9) {
+                    continue;
+                }
+                if (mineGrid[rowPos][colPos]) {
+                    hitMine = true;
+                    break;
+                }
+                revealTile(board, mineGrid, rowPos, colPos);
+            }
+        }
+        if (hitMine) {
+            break;
+        }
+    }
+
+    if (hitMine) { //If a mine is revealed in the surrounding tiles, the game ends
+        gameOver = true;
+        revealAllMines();
+        render();
+        document.getElementById('status').textContent = 'Game Over: You Hit a Mine...';
+        return;
+    }
+
+    render();
+    if (checkWin(board, mineGrid)) { //If all non-mine cells are revealed after the surrounding tiles are opened, the player wins
+        gameOver = true;
+    }
+
+    if (gameOver) {
+        document.getElementById('status').textContent = `Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
+    } else {
+        document.getElementById('status').textContent = '';
+    }
+}
+
 function handleFlag(row, col) {
     if (gameOver) return;
     flagGrid = flagCell(flagGrid, board, row, col); // Update the flagGrid
@@ -217,14 +263,13 @@ function newGame() {
     buildGrid();
     render();
     document.getElementById('status').textContent = '';
-
-
 }
+
+function main() {
+    newGame();
+}
+
+newGame();
 
 // ========================================================================================================================================
 
-
-
-function main(){
-    newGame();
-}
