@@ -170,6 +170,7 @@ function main(){
     let cellChoice;
 
     while(gameActive){
+         
         cellChoice = prompt("Would you like to reveal a cell (r) or place a flag (f)?: ");
         if (cellChoice == null || cellChoice.length === 0 || cellChoice != 'r' && cellChoice != 'f') {
             console.log("Invalid choice. Please enter 'r' or 'f'.\n");
@@ -223,4 +224,3 @@ function main(){
     } 
     console.log(`Game Over! You ${checkWin(board, mineGrid) ? "Win" : "hit a mine"}`);
 }
-main();
