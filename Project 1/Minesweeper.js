@@ -3,7 +3,7 @@ var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
-var board, mineGrid, flagGrid, gameOver;
+var board, mineGrid, flagGrid, gameOver, winState;
 
 function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
     for (let row = 0; row < ROWS; row++) {
@@ -143,6 +143,8 @@ function render() {
             if (val === 9) {
                 if (flagGrid[row][col]) {
                     td.textContent = '🚩'; // changed F to be flag emoji
+                } else if (winState && mineGrid[row][col]) {
+                    td.textContent = '💣'; // If bombs unflagged after win, they're marked with bomb icon
                 }
             // mine
             } else if (val === -1) {
@@ -182,6 +184,8 @@ function handleReveal(row, col) {
         render();
     } else if (checkWin(board, mineGrid)) {
         gameOver = true;
+        winState = true;
+        render(); //Re-renders board so show unflagged bombs
     }
     if (gameOver) {
         document.getElementById('status').textContent = `Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
@@ -226,6 +230,8 @@ function handleDoubleReveal(row, col) { //Reveal surrounding tiles when a number
     render();
     if (checkWin(board, mineGrid)) { //If all non-mine cells are revealed after the surrounding tiles are opened, the player wins
         gameOver = true;
+        winState = true;
+        render();
     }
 
     if (gameOver) {
@@ -260,6 +266,7 @@ function newGame() {
 
     firstTurn = true;
     gameOver = false;
+    winState = false;
     buildGrid();
     render();
     document.getElementById('status').textContent = '';
