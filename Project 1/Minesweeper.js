@@ -103,7 +103,21 @@ function flagCell(flagGrid, board, row, col) {
     return flagGrid
 }
 
+function updateFlagCount() {
+    let placedFlags = 0;
 
+     // go through every cell and count placed flags
+    for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+            if (flagGrid[row][col]) {
+                placedFlags++;
+            }
+        }
+    }
+
+    let mineCount = Number(document.getElementById('mineSlider').value);
+    document.getElementById('flagCount').textContent = mineCount - placedFlags;
+}
 
 // Code chunk below replaces prompt-based input
 // ========================================================================================================================================
@@ -277,6 +291,7 @@ function handleFlag(row, col) {
     if (gameOver) return;
     flagGrid = flagCell(flagGrid, board, row, col); // Update the flagGrid
     render();
+    updateFlagCount();
 }
 
 function newGame() {
@@ -301,6 +316,7 @@ function newGame() {
     winState = false;
     buildGrid();
     render();
+    updateFlagCount();
     document.getElementById('status').textContent = '';
 }
 
