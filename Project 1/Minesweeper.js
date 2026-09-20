@@ -204,6 +204,7 @@ function revealAllMines() {
 
 function handleReveal(row, col) {
     if (gameOver) return;
+    if (flagGrid[row][col]) return; // flagged cells cannot be revealed
 
     let revealResult = revealTile(board, mineGrid, row, col);
     render();
