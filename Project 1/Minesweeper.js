@@ -141,7 +141,7 @@ function render() {
             // flag
             if (val === 9) {
                 if (flagGrid[row][col]) {
-                    td.textContent = 'F';
+                    td.textContent = '🚩'; // changed F to be flag emoji
                 }
             // mine
             } else if (val === -1) {
@@ -208,7 +208,10 @@ function newGame() {
     board = initializeBoard(board);
     mineGrid = initializeMineGrid(mineGrid);
     flagGrid = initializeFlagGrid(flagGrid);
-    mineGrid = placeMines(mineGrid, MIN_MINES); // fixed count for now
+
+    let mineCount = Number(document.getElementById('mineSlider').value); // gets selected mine count
+    mineGrid = placeMines(mineGrid, mineCount); // place selected number of mines (1-20)
+
     firstTurn = true;
     gameOver = false;
     buildGrid();
