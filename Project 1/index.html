@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html>
-<title>Minesweeper</title>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Minesweeper</title>
 
 <style>
     /* the best css you've ever seen */
+    body {
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
     table {
         border-collapse: collapse;
+        table-layout: fixed;
+        margin: 0 auto;
+    }
+    #board {
+        align-self: center;
     }
     td {
-        width: 25px;
-        height: 25px;
+        box-sizing: border-box;
+        width: 60px;
+        height: 60px;
         text-align: center;
         border: 1px solid black;
         cursor: pointer;
+        font-size: 20px;
+        user-select: none;
     }
     .revealed {
         background: #ddd;
     }
 </style>
 
-<head>
 </head>
 
 <body>

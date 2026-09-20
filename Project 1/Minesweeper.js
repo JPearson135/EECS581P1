@@ -97,7 +97,7 @@ function checkWin(board,mineGrid) { //Goes through the board to see if every non
 function flagCell(flagGrid, board, row, col) {
     if (board[row][col] != 9) {
         console.log("Invalid flag placement. Place flag on unrevealed tile");
-        return;
+        return flagGrid;
     }
     flagGrid[row][col] = !flagGrid[row][col];
     return flagGrid
@@ -145,7 +145,7 @@ function render() {
                 }
             // mine
             } else if (val === -1) {
-                td.className = 'revlealed';
+                td.className = 'revealed';
                 td.textContent = '💥'; 
             // safe cell
             } else {
