@@ -97,7 +97,7 @@ function checkWin(board,mineGrid) { //Goes through the board to see if every non
 function flagCell(flagGrid, board, row, col) {
     if (board[row][col] != 9) {
         console.log("Invalid flag placement. Place flag on unrevealed tile");
-        return flagGrid;
+        return;
     }
     flagGrid[row][col] = !flagGrid[row][col];
     return flagGrid
@@ -145,7 +145,7 @@ function render() {
                 }
             // mine
             } else if (val === -1) {
-                td.className = 'revealed';
+                td.className = 'revlealed';
                 td.textContent = '💥'; 
             // safe cell
             } else {
@@ -183,7 +183,7 @@ function handleReveal(row, col) {
         gameOver = true;
     }
     if (gameOver) {
-        document.getElementById('status').textContent = `Game Over You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
+        document.getElementById('status').textContent = `Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
     } else {
         document.getElementById('status').textContent = '';
     }
